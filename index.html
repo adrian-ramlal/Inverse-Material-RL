@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="A goal-conditioned PPO policy in a normalizing-flow latent space estimates material parameters for a non-differentiable MPM fracture simulator (orange peeling) without per-target retraining.">
+  <meta name="keywords" content="inverse material estimation, reinforcement learning, MPM, fracture, normalizing flow">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Latent Space Reinforcement Learning for Inverse Material Estimation in Food Fracture Simulation</title>
+  <link rel="canonical" href="https://adrian-ramlal.github.io/inverse-material/">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Latent Space Reinforcement Learning for Inverse Material Estimation in Food Fracture Simulation">
+  <meta property="og:description" content="Adrian Ramlal, Yuhao Chen and John S. Zelek. CVPR 2026 MetaFood Workshop.">
+  <meta property="og:url" content="https://adrian-ramlal.github.io/inverse-material/">
+  <meta property="og:image" content="https://adrian-ramlal.github.io/inverse-material/static/images/og.jpg">
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="stylesheet" href="./static/css/page.css">
+  <link rel="icon" type="image/png" href="./static/images/favicon.png">
+  <script defer src="./static/js/page.js"></script>
+</head>
+<body>
+
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="navbar-menu">
+    <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
+      <a class="navbar-item" href="https://adrian-ramlal.github.io/" aria-label="Adrian Ramlal's homepage">
+        <span class="icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg></span>
+      </a>
+      <div class="navbar-item has-dropdown is-hoverable">
+        <a class="navbar-link">More Research</a>
+        <div class="navbar-dropdown">
+          <a class="navbar-item" href="https://adrian-ramlal.github.io/persistgs/">PersistGS</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">Latent Space Reinforcement Learning for Inverse Material Estimation in Food Fracture Simulation</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><a href="https://adrian-ramlal.github.io/">Adrian Ramlal</a>,</span>
+            <span class="author-block">Yuhao Chen,</span>
+            <span class="author-block"><a href="https://uwaterloo.ca/systems-design-engineering/profile/jzelek">John S. Zelek</a></span>
+          </div>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">University of Waterloo</span>
+          </div>
+          <div class="is-size-5 publication-venue">CVPR 2026 MetaFood Workshop</div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <span class="link-block">
+                <a href="https://openaccess.thecvf.com/content/CVPR2026W/MTF/papers/Ramlal_Latent_Space_Reinforcement_Learning_for_Inverse_Material_Estimation_in_Food_CVPRW_2026_paper.pdf" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://arxiv.org/abs/2606.16870" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="ai ai-arxiv"></i></span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="#BibTeX" class="button is-normal is-rounded is-dark">
+                  <span class="icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M6 17h3l2-4V7H5v6h3zm8 0h3l2-4V7h-6v6h3z"/></svg></span>
+                  <span>BibTeX</span>
+                </a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <div class="tl interpolation-panel" data-timeline data-interval="900" data-loop="pingpong" style="--ratio: 434 / 520; max-width: 420px; margin: 0 auto">
+        <div class="tl-stack">
+          <img src="./static/images/orange-1.webp" alt="Simulated orange with the peel intact." class="on">
+          <img src="./static/images/orange-2.webp" alt="Simulated orange with the peel starting to lift.">
+          <img src="./static/images/orange-3.webp" alt="Simulated orange, mid-peel.">
+          <img src="./static/images/orange-4.webp" alt="Simulated orange with most of the peel lifted.">
+          <img src="./static/images/orange-5.webp" alt="Simulated orange with the peel separated.">
+        </div>
+        <div class="tl-bar">
+          <button class="button is-small is-rounded tl-play" type="button">Pause</button>
+          <div class="tl-track">
+            <input class="slider is-fullwidth is-info" type="range" min="0" max="4" step="1" value="0" aria-label="Peeling behaviour">
+            <div class="tl-labels">
+              <span data-at="0">intact</span>
+              <span data-at="2">mid-peel</span>
+              <span data-at="4">separated</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <h2 class="subtitle has-text-centered" style="margin-top: 1.25rem">
+        Orange peeling simulated with AnisoMPM, a non-differentiable fracture mechanics simulator with 9 material parameters and about 156 s per evaluation. Different parameter settings produce different peeling behaviours, from intact to separated.
+      </h2>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>Realistic visual simulation of food manipulation requires accurate material parameters, yet these are difficult to measure directly and vary across the heterogeneous regions of a single food item. We address the inverse problem of estimating material parameters from a target description of fracture behavior in a non-differentiable continuum damage mechanics simulator. Using orange peeling as a test case, we train a neural surrogate on 2,000 forward simulations and compare Covariance Matrix Adaptation Evolution Strategy (CMA-ES, a gradient-free evolutionary optimizer) with Proximal Policy Optimization (PPO, a reinforcement learning algorithm) across the original 9-dimensional parameter space and two learned 4-dimensional latent representations. Since different oranges have different material properties, a practical inverse system must handle arbitrary targets without retraining. We train a goal-conditioned PPO policy that learns a general inverse mapping: given any target description of peeling behavior, the policy produces a material parameter estimate in a single forward pass (8 surrogate evaluations, approximately 10 ms). Operating in a normalizing flow latent space with a shared surrogate evaluator, the goal-conditioned policy achieves 0.642 actual recovery when validated through the simulator, outperforming the original parameter space by 23%. A warm-start extension that initializes CMA-ES refinement from the policy's output further improves recovery to 0.828 with 540 evaluations. These findings provide a practical framework for inverse food physics and lay groundwork for vision-driven material identification from video observations of food manipulation.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Method</h2>
+    <div class="figure-block">
+      <img src="./static/images/pipeline.webp" width="1600" height="479" loading="lazy" alt="Method overview: representation, optimization and evaluation.">
+      <p class="figure-caption">At inference the encoder, decoder and surrogate are frozen. Parameters are optimized directly or as a 4-D latent code. CMA-ES searches per target, goal-conditioned PPO takes the target features as its goal and generalizes across targets, and the warm start combines both. Every proposal is decoded to parameters and scored by the same MLP surrogate.</p>
+    </div>
+    <div class="content has-text-justified" style="margin-top: 1.5rem">
+      <p>The simulator is AnisoMPM, a material point method with continuum damage mechanics and anisotropic fibre reinforcement. Its fracture mechanics are not differentiable, and one run takes about 156 s, so gradient-based inversion is ruled out and search in the simulator is slow. A neural surrogate trained on 2,000 simulations predicts behavioural features of the peel from the 9 material parameters, about 1.5 × 10⁶ times faster than the simulator.</p>
+      <p>A VAE or a normalizing flow compresses the 9 parameters to a 4-D latent code. A goal-conditioned PPO policy observes the target features as its goal and refines a latent code over 8 steps, so one trained policy serves any target. Every method, including CMA-ES in each space, is scored by the same surrogate after decoding back to parameters, and every final estimate is validated in the simulator.</p>
+    </div>
+    <div class="figure-block" style="margin-top: 1.5rem">
+      <img src="./static/images/training.webp" width="1600" height="387" loading="lazy" alt="Offline training of the surrogate and the latent models.">
+      <p class="figure-caption">Offline training. (a) The MLP surrogate learns to predict behavioural features from material parameters. (b) The VAE or flow compresses the 9-D parameter space to 4-D with parameter reconstruction, latent regularization and feature prediction losses, so that nearby codes produce similar peels.</p>
+    </div>
+    <div class="columns is-centered" style="margin-top: 1.5rem">
+      <div class="column is-four-fifths figure-block">
+        <img src="./static/images/simulation.webp" width="1365" height="615" loading="lazy" alt="AnisoMPM simulation of orange peeling at three stages, with particles coloured by region and damage.">
+        <p class="figure-caption">AnisoMPM simulation of orange peeling at three stages. Particles are coloured by region and damage: orange for intact skin, yellow for intact flesh, purple for damaged skin, cyan for damaged flesh.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Results</h2>
+    <div class="content has-text-justified">
+      <p>On 10 held-out targets, the goal-conditioned policy in the flow latent space reaches 0.642 recovery with 8 evaluations per target: 82% of CMA-ES in the raw parameter space (0.781), which needs 5,000 evaluations per target, and 23% above the same policy in the raw 9-D space (0.523). Starting CMA-ES from the policy's estimate (warm start, 540 evaluations) reaches up to 0.828. Searching harder against an imperfect surrogate does not always help: CMA-ES with 5,000 evaluations scored slightly below CMA-ES with 540 (0.781 against 0.788).</p>
+    </div>
+
+    <div class="chart">
+      <p class="chart-title">Recovery and cost per target</p>
+      <div class="legend">
+        <span><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="5" fill="#2a78d6"/></svg>CMA-ES, searched per target</span>
+        <span><svg viewBox="0 0 12 12" aria-hidden="true"><rect x="1" y="1" width="10" height="10" rx="2" fill="#eb6834"/></svg>Goal-conditioned PPO</span>
+        <span><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 0.5 L11.5 6 L6 11.5 L0.5 6 Z" fill="#1baf7a"/></svg>Warm start: PPO, then CMA-ES</span>
+      </div>
+<svg viewBox="0 0 700 390" role="img" aria-labelledby="im-chart-title im-chart-desc" font-family="Noto Sans, Helvetica Neue, Arial, sans-serif" font-size="14">
+<title id="im-chart-title">Recovery against evaluations per target</title>
+<desc id="im-chart-desc">Goal-conditioned PPO needs 8 evaluations per target (best 0.642, flow latent); CMA-ES needs 5,000 (best 0.781, raw space); warm start needs 540 (best 0.828, VAE latent).</desc>
+<line x1="80" y1="330.00" x2="660" y2="330.00" stroke="#c3c2b7" stroke-width="1"/>
+<text x="70" y="334.00" text-anchor="end" fill="#898781" font-size="12">0</text>
+<line x1="80" y1="255.00" x2="660" y2="255.00" stroke="#e1e0d9" stroke-width="1"/>
+<text x="70" y="259.00" text-anchor="end" fill="#898781" font-size="12">0.25</text>
+<line x1="80" y1="180.00" x2="660" y2="180.00" stroke="#e1e0d9" stroke-width="1"/>
+<text x="70" y="184.00" text-anchor="end" fill="#898781" font-size="12">0.5</text>
+<line x1="80" y1="105.00" x2="660" y2="105.00" stroke="#e1e0d9" stroke-width="1"/>
+<text x="70" y="109.00" text-anchor="end" fill="#898781" font-size="12">0.75</text>
+<line x1="80" y1="30.00" x2="660" y2="30.00" stroke="#e1e0d9" stroke-width="1"/>
+<text x="70" y="34.00" text-anchor="end" fill="#898781" font-size="12">1</text>
+<line x1="142.40" y1="30" x2="142.40" y2="330" stroke="#e1e0d9" stroke-width="1"/>
+<text x="142.40" y="348" text-anchor="middle" fill="#898781" font-size="12">10</text>
+<line x1="299.20" y1="30" x2="299.20" y2="330" stroke="#e1e0d9" stroke-width="1"/>
+<text x="299.20" y="348" text-anchor="middle" fill="#898781" font-size="12">100</text>
+<line x1="456.00" y1="30" x2="456.00" y2="330" stroke="#e1e0d9" stroke-width="1"/>
+<text x="456.00" y="348" text-anchor="middle" fill="#898781" font-size="12">1,000</text>
+<line x1="612.80" y1="30" x2="612.80" y2="330" stroke="#e1e0d9" stroke-width="1"/>
+<text x="612.80" y="348" text-anchor="middle" fill="#898781" font-size="12">10,000</text>
+<text x="370.0" y="370" text-anchor="middle" fill="#898781" font-size="12">Evaluations per target (log scale)</text>
+<text transform="translate(22 180.0) rotate(-90)" text-anchor="middle" fill="#898781" font-size="12">Recovery, validated in the simulator</text>
+<g class="pt" tabindex="0"><title>CMA-ES, raw space: 0.781 recovery with 5,000 evaluations per target</title><circle cx="565.60" cy="95.70" r="13" fill="transparent"/><circle class="mark" cx="565.60" cy="95.70" r="6.5" fill="#2a78d6" stroke="#fff" stroke-width="2"/></g>
+<g class="pt" tabindex="0"><title>CMA-ES, flow latent: 0.552 recovery with 5,000 evaluations per target</title><circle cx="565.60" cy="164.40" r="13" fill="transparent"/><circle class="mark" cx="565.60" cy="164.40" r="6.5" fill="#2a78d6" stroke="#fff" stroke-width="2"/></g>
+<g class="pt" tabindex="0"><title>CMA-ES, VAE latent: 0.028 recovery with 5,000 evaluations per target</title><circle cx="565.60" cy="321.60" r="13" fill="transparent"/><circle class="mark" cx="565.60" cy="321.60" r="6.5" fill="#2a78d6" stroke="#fff" stroke-width="2"/></g>
+<g class="pt" tabindex="0"><title>CMA-ES, raw space: 0.788 recovery with 540 evaluations per target</title><circle cx="402.04" cy="93.60" r="13" fill="transparent"/><circle class="mark" cx="402.04" cy="93.60" r="6.5" fill="#2a78d6" stroke="#fff" stroke-width="2"/></g>
+<g class="pt" tabindex="0"><title>Goal-conditioned PPO, raw space: 0.523 recovery with 8 evaluations per target</title><circle cx="127.20" cy="173.10" r="13" fill="transparent"/><rect class="mark" x="121.20" y="167.10" width="12" height="12" rx="2" fill="#eb6834" stroke="#fff" stroke-width="2"/></g>
+<g class="pt" tabindex="0"><title>Goal-conditioned PPO, flow latent: 0.642 recovery with 8 evaluations per target</title><circle cx="127.20" cy="137.40" r="13" fill="transparent"/><rect class="mark" x="121.20" y="131.40" width="12" height="12" rx="2" fill="#eb6834" stroke="#fff" stroke-width="2"/></g>
+<g class="pt" tabindex="0"><title>Goal-conditioned PPO, VAE latent: 0.485 recovery with 8 evaluations per target</title><circle cx="127.20" cy="184.50" r="13" fill="transparent"/><rect class="mark" x="121.20" y="178.50" width="12" height="12" rx="2" fill="#eb6834" stroke="#fff" stroke-width="2"/></g>
+<g class="pt" tabindex="0"><title>Warm start, raw space: 0.808 recovery with 540 evaluations per target</title><circle cx="426.04" cy="87.60" r="13" fill="transparent"/><path class="mark" d="M426.04 79.60 L434.04 87.60 L426.04 95.60 L418.04 87.60 Z" fill="#1baf7a" stroke="#fff" stroke-width="2"/></g>
+<g class="pt" tabindex="0"><title>Warm start, flow latent: 0.773 recovery with 540 evaluations per target</title><circle cx="414.04" cy="98.10" r="13" fill="transparent"/><path class="mark" d="M414.04 90.10 L422.04 98.10 L414.04 106.10 L406.04 98.10 Z" fill="#1baf7a" stroke="#fff" stroke-width="2"/></g>
+<g class="pt" tabindex="0"><title>Warm start, VAE latent: 0.828 recovery with 540 evaluations per target</title><circle cx="414.04" cy="81.60" r="13" fill="transparent"/><path class="mark" d="M414.04 73.60 L422.04 81.60 L414.04 89.60 L406.04 81.60 Z" fill="#1baf7a" stroke="#fff" stroke-width="2"/></g>
+<text x="141.20" y="142.40" text-anchor="start" fill="#0b0b0b" font-size="13">GC-PPO, flow latent: 0.642</text>
+<text x="578.60" y="100.70" text-anchor="start" fill="#0b0b0b" font-size="13">CMA-ES, raw: 0.781</text>
+<text x="414.04" y="65.60" text-anchor="middle" fill="#0b0b0b" font-size="13">Warm start, VAE latent: 0.828</text>
+</svg>
+      <p class="figure-caption">Each point is one method on the 10 held-out targets, validated in the simulator. The four points at 540 evaluations are spread sideways so they do not overlap. The tables below list every value.</p>
+    </div>
+
+    <div class="columns" style="margin-top: 2rem">
+      <div class="column">
+        <div class="table-container">
+          <p class="table-caption">Inverse recovery on 10 held-out targets</p>
+          <table class="table is-narrow is-hoverable is-fullwidth">
+            <thead><tr><th>Method</th><th>Evals</th><th>Surrogate</th><th>Simulator</th><th>Gap</th></tr></thead>
+            <tbody>
+              <tr class="group"><td colspan="5">Searched per target</td></tr>
+              <tr><td>CMA-ES, raw space</td><td>5,000</td><td>0.922</td><td>0.781</td><td>0.141</td></tr>
+              <tr><td>CMA-ES, flow latent</td><td>5,000</td><td>0.878</td><td>0.552</td><td>0.327</td></tr>
+              <tr><td>CMA-ES, VAE latent</td><td>5,000</td><td>0.498</td><td>0.028</td><td>0.470</td></tr>
+              <tr class="group"><td colspan="5">One policy for all targets</td></tr>
+              <tr><td>GC-PPO, raw space</td><td>8</td><td>0.531</td><td>0.523</td><td>0.008</td></tr>
+              <tr class="ours"><td>GC-PPO, flow latent</td><td>8</td><td>0.654</td><td>0.642</td><td>0.012</td></tr>
+              <tr><td>GC-PPO, VAE latent</td><td>8</td><td>0.510</td><td>0.485</td><td>0.025</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="column">
+        <div class="table-container">
+          <p class="table-caption">Warm start against CMA-ES</p>
+          <table class="table is-narrow is-hoverable is-fullwidth">
+            <thead><tr><th>Method</th><th>Evals</th><th>Surrogate</th><th>Simulator</th><th>Gap</th></tr></thead>
+            <tbody>
+              <tr><td>Warm start, raw space</td><td>540</td><td>0.874</td><td>0.808</td><td>0.065</td></tr>
+              <tr><td>Warm start, flow latent</td><td>540</td><td>0.867</td><td>0.773</td><td>0.095</td></tr>
+              <tr class="ours"><td>Warm start, VAE latent</td><td>540</td><td>0.862</td><td>0.828</td><td>0.034</td></tr>
+              <tr><td>CMA-ES, raw space</td><td>540</td><td>0.867</td><td>0.788</td><td>0.079</td></tr>
+              <tr><td>CMA-ES, raw space</td><td>5,000</td><td>0.922</td><td>0.781</td><td>0.141</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="content has-text-justified">
+      <p>"Surrogate" is the recovery the surrogate predicts; "Simulator" is the recovery after running the estimate in AnisoMPM; the gap between them grows with how hard a method searches the surrogate.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Limitations</h2>
+    <div class="content has-text-justified">
+      <p>The method is tested on one case, orange peeling with AnisoMPM, so other foods and fracture modes are untested. The 10 held-out targets vary a lot from target to target (standard deviation 0.084 to 0.162), which limits comparisons between methods with similar means. The 9-dimensional parameter space is small next to the spatially varying material fields of real food, and the warm-start advantage over CMA-ES with the same budget is not consistent across representations.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <div class="bibbox">
+      <button class="button is-small is-rounded copy" type="button">Copy</button>
+<pre><code>@InProceedings{ramlal2026latent,
+    author    = {Ramlal, Adrian and Chen, Yuhao and Zelek, John S.},
+    title     = {Latent Space Reinforcement Learning for Inverse Material Estimation in Food Fracture Simulation},
+    booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) Workshops},
+    month     = {June},
+    year      = {2026},
+    pages     = {9573-9581}
+}</code></pre>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <a class="icon-link" href="https://openaccess.thecvf.com/content/CVPR2026W/MTF/papers/Ramlal_Latent_Space_Reinforcement_Learning_for_Inverse_Material_Estimation_in_Food_CVPRW_2026_paper.pdf" aria-label="Paper PDF"><svg viewBox="0 0 24 24" width="25" height="25" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></a>
+      &nbsp;
+      <a class="icon-link" href="https://adrian-ramlal.github.io/" aria-label="Adrian Ramlal's homepage"><svg viewBox="0 0 24 24" width="25" height="25" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg></a>
+    </div>
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content has-text-centered">
+          <p>This website is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.</p>
+          <p>The source code of this website is borrowed from <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
