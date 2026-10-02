@@ -155,6 +155,15 @@
         <p class="figure-caption">AnisoMPM simulation of orange peeling at three stages. Particles are coloured by region and damage: orange for intact skin, yellow for intact flesh, purple for damaged skin, cyan for damaged flesh.</p>
       </div>
     </div>
+    <div class="columns is-centered" style="margin-top: 1.5rem">
+      <div class="column is-three-fifths figure-block">
+        <picture>
+          <source srcset="./static/images/training-sims-still.webp" media="(prefers-reduced-motion: reduce)">
+          <img src="./static/images/training-sims.webp" width="640" height="400" loading="lazy" alt="Four simulations from the training set peeling in sync, each tearing a different amount of skin away.">
+        </picture>
+        <p class="figure-caption">Four of the 2,000 training simulations, played in sync. Only the 9 material parameters differ. They are ordered by skin detachment fraction, one of the 12 behavioural features, from least (top left) to most (bottom right). Particles are coloured by starting depth (rind, pith, flesh), and the gripper that pulls the skin is not drawn.</p>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -249,6 +258,24 @@
     </div>
     <div class="content has-text-justified">
       <p>"Surrogate" is the recovery the surrogate predicts; "Simulator" is the recovery after running the estimate in AnisoMPM; the gap between them grows with how hard a method searches the surrogate.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Proof of Concept: A Reconstructed Orange</h2>
+    <div class="content has-text-justified">
+      <p>The paper uses a simulated orange. As a first step toward the vision-driven setting it points to, an orange reconstructed with 3D Gaussian Splatting is peeled in AnisoMPM. The orange is a <a href="https://openaccess.thecvf.com/content/CVPR2025/html/Wu_FruitNinja_3D_Object_Interior_Texture_Generation_with_Gaussian_Splatting_CVPR_2025_paper.html">FruitNinja</a> model (Wu and Chen, CVPR 2025). This is not part of the paper and has no quantitative evaluation.</p>
+    </div>
+    <div class="columns is-centered">
+      <div class="column is-three-fifths figure-block">
+        <picture>
+          <source srcset="./static/images/reconstructed-orange-still.webp" media="(prefers-reduced-motion: reduce)">
+          <img src="./static/images/reconstructed-orange.webp" width="640" height="400" loading="lazy" alt="A reconstructed orange being peeled, shown in its own colours next to a heatmap of how far each point moves.">
+        </picture>
+        <p class="figure-caption">Left: the reconstructed orange, drawn as its Gaussian centres in their own colours. Right: how far each point has moved, normalized per frame (dark: at rest, bright: moving with the peel). Both are point-splat renders, not full Gaussian Splatting rasterization.</p>
+      </div>
     </div>
   </div>
 </section>
